@@ -4,6 +4,7 @@
 
 # Dependencies
 import numpy as np
+
 from adaline import Adaline
 from perceptron import Perceptron
 from sgd import SGD
