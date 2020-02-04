@@ -4,21 +4,42 @@
 
 # Dependencies
 import numpy as np
+import pandas as pd
+import sys
 
 from adaline import Adaline
 from perceptron import Perceptron
 from sgd import SGD
 
 # (20 points) Write program to test the different classifiers.
+# get file and classifier from command line
+classifiers  = ['perceptron', 'adaline', 'sgd']
+classifier = sys.argv[1]
+if (classifiers.index(classifier) == -1):
+    print('invalid classifier')
+    sys.exit(1)
+if (classifier == 'perceptron'):
+    cf = Perceptron(learning_rate=0.1, num_iter=50)
+elif (classifier == 'adaline'):
+    cf = Adaline(learning_rate=0.1, num_iter=50)
+elif (classifier == 'sgd'):
+    cf = SGD(learning_rate=0.1, num_iter=50)
 
+file_name = sys.argv[2]
 
-#   (a) (1 point) Your program should be called main.py.
+# convert the file to dataframe
+df = pd.read_csv(file_name, header=None)
 
+def main():
+    cf.fit(X, y)
+    cf.plot(range(1, len(cf.errors_) + 1), cf.errors_, marker='o')
+    plt.xlabel('Epochs')
+    plt.ylabel('Number of Updates')
+    plt.show()
 
-#  (b) (2 points) It should have two arguments: (i) classifier name, which can be ‘perceptron’, ‘adaline’, and ‘sgd’, and (ii) data file (including path information). You can have other arguments depending on the design of your program.
+if __name__ == "__main__":
+    main()
 
-
-#  (c) (2 points) It should have proper error checking functions (e.g., make sure the classifier name is a valid one).
 
 
 # (d) (15 points) It calls the different classifiers to train models, make predictions, and report prediction errors.

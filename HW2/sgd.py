@@ -8,17 +8,17 @@ import numpy as np
 # (20 points) Design and implement a Stochastic Gradient Descent (SGD) binary classifier.
 
 class SGD(object):
-    def __init__(self, eta=0.01, n_iter=10, shuffle=True, random_state=None):
-        self.eta = eta
-        self.n_iter = n_iter
+    def __init__(self, learning_rate=0.01, num_iter=10, shuffle=True, rand_state=None):
+        self.learning_rate = learning_rate
+        self.num_iter = num_iter
         self.w_initialized = False
         self.shuffle = shuffle
-        self.random_state = random_state
+        self.rand_state = rand_state
 
     def fit(self, X, y):
         self._initialize_weights(X.shape[1])
         self.cost_ = []
-        for i in range(self.n_iter):
+        for i in range(self.num_iter):
             if self.shuffle:
                 X, y = self._shuffle(X, y)
             cost = []        
@@ -43,15 +43,15 @@ class SGD(object):
         return X[r], y[r]
 
     def _initialize_weights(self, m):
-        self.rgen = np.random.RandomState(self.random_state)
+        self.rgen = np.random.RandomState(self.rand_state)
         self.w_ = self.rgen.normal(loc=0.0, scale=0.01, size=1 + m)
         self.w_initialized = True
 
     def _update_weights(self, xi, target):
         output = self.activation(self.net_input(xi))
         error = (target - output)
-        self.w_[1:] += self.eta * xi.dot(error)
-        self.w_[0] += self.eta * error
+        self.w_[1:] += self.learning_rate * xi.dot(error)
+        self.w_[0] += self.learning_rate * error
         cost = 0.5 * error**2
         return cost
     def net_input(self, X):
