@@ -2,34 +2,39 @@
 # February 3, 2020
 # perceptron.py
 
-# dependencies
 import numpy as np
 
-# Design and implement a Perceptron binary classifier.
 class Perceptron(object):
-    
-    def __init__(self, learning_rate=0.01, num_iter=50, rand_state=1):
-        self.learning_rate = learning_rate
-        self.num_iter = num_iter
-        self.rand_state = rand_state
-        
+    def __init__(self, rate = 0.01, niter = 10):
+        self.rate = rate
+        self.niter = niter
+ 
     def fit(self, X, y):
-        rgen = np.random.RandomState(self.rand_state)
-        self.w_ = rgen.normal(loc=0.0, scale=0.01, size = 1 + X.shape[1])
-        self.errors_ = []
-            
-        for _ in range(self.num_iter):
-            errors = 0
+        """Fit training data
+        X : Training vectors, X.shape : [#samples, #features]
+        y : Target values, y.shape : [#samples]
+        """
+
+        # weights
+        self.weight = np.zeros(1 + X.shape[1])
+
+        # Number of misclassifications
+        self.errors = []  # Number of misclassifications
+
+        for i in range(self.niter):
+            err = 0
             for xi, target in zip(X, y):
-                update = self.learning_rate * (target - self.predict(xi))
-                self.w_[1:] += update * xi
-                self.w_[0] += update
-                errors += int(update != 0.0)
-                self.errors_.append(errors)
+                delta_w = self.rate * (target - self.predict(xi))
+                self.weight[1:] += delta_w * xi
+                self.weight[0] += delta_w
+                err += int(delta_w != 0.0)
+            self.errors.append(err)
         return self
-                
+ 
     def net_input(self, X):
-        return np.dot(X, self.w_[1:]) + self.w_[0]
-    
+        """Calculate net input"""
+        return np.dot(X, self.weight[1:]) + self.weight[0]
+ 
     def predict(self, X):
+        """Return class label after unit step"""
         return np.where(self.net_input(X) >= 0.0, 1, -1)

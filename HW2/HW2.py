@@ -14,65 +14,122 @@ from adaline import Adaline
 from perceptron import Perceptron
 from sgd import SGD
 
-# (20 points) Write program to test the different classifiers.
-# get file and classifier from command line
 classifiers  = ['perceptron', 'adaline', 'sgd']
 classifier = sys.argv[1]
 if (classifiers.index(classifier) == -1):
     print('invalid classifier')
     sys.exit(1)
 if (classifier == 'perceptron'):
-    cf = Perceptron(learning_rate=0.1, num_iter=10)
+    cf = Perceptron(rate=0.1, niter=10)
 elif (classifier == 'adaline'):
-    cf = Adaline(learning_rate=0.1, num_iter=10)
+    cf = Adaline(rate=0.1, niter=10)
 elif (classifier == 'sgd'):
-    cf = SGD(learning_rate=0.1, num_iter=10)
+    cf = SGD(rate=0.1, niter=10, random_state=1)
 
 file_name = sys.argv[2]
 
 # convert the file to dataframe
 df = pd.read_csv(file_name, header=None)
-X = df.iloc[0:100, [0, 2]].values
-y = df.iloc[0:100, 4].values
-y = np.where(y == 'Iris-setosa', -1, 1)
 
 def plot_decision_regions(X, y, classifier, resolution=0.02):
     # setup marker generator and color map
     markers = ('s', 'x', 'o', '^', 'v')
     colors = ('red', 'blue', 'lightgreen', 'gray', 'cyan')
-    cmap = ListedColormap(colors[:len(np.unique(y))])
+    cmap = ListedColormap(colors[:len(np.unique(y))])   
     # plot the decision surface
-    x1_min, x1_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    x1_min, x1_max = X[:,  0].min() - 1, X[:, 0].max() + 1
     x2_min, x2_max = X[:, 1].min() - 1, X[:, 1].max() + 1
     xx1, xx2 = np.meshgrid(np.arange(x1_min, x1_max, resolution),
     np.arange(x2_min, x2_max, resolution))
     Z = classifier.predict(np.array([xx1.ravel(), xx2.ravel()]).T)
     Z = Z.reshape(xx1.shape)
-    plt.contourf(xx1, xx2, Z, alpha=0.3, cmap=cmap)
+    plt.contourf(xx1, xx2, Z, alpha=0.4, cmap=cmap)
     plt.xlim(xx1.min(), xx1.max())
-    plt.ylim(xx2.min(), xx2.max())
+    plt.ylim(xx2.min(), xx2.max())  
     # plot class samples
     for idx, cl in enumerate(np.unique(y)):
-        plt.scatter(x=X[y == cl, 0], y=X[y == cl, 1], alpha=0.8, c=colors[idx], marker=markers[idx], label=cl, edgecolor='black')
+        plt.scatter(x=X[y == cl, 0], y=X[y == cl, 1],
+        alpha=0.8, c=cmap(idx),
+        marker=markers[idx], label=cl)
 
 def main():
+    X = df.iloc[0:100, [0, 2]].values
+    y = df.iloc[0:100, 4].values
+    y = np.where(y == 'Iris-setosa', -1, 1)
+    X_std = np.copy(X)
+    X_std[:,0] = (X[:,0] - X[:,0].mean()) / X[:,0].std()
+    X_std[:,1] = (X[:,1] - X[:,1].mean()) / X[:,1].std()
+
     plt.scatter(X[:50, 0], X[:50, 1], color='red', marker='o', label='setosa')
     plt.scatter(X[50:100, 0], X[50:100, 1], color='blue', marker='x', label='versicolor')
     plt.xlabel('petal length')
     plt.ylabel('sepal length')
     plt.legend(loc='upper left')
-    plt.show()
-    cf.fit(X, y)
-    plt.plot(range(1, len(cf.errors_) + 1), cf.errors_, marker='o')
-    plt.xlabel('Epochs')
-    plt.ylabel('Number of Updates')
+
     plt.show()
 
-    plot_decision_regions(X, y, classifier=cf)
-    plt.xlabel('sepal length [cm]')
-    plt.ylabel('petal length [cm]')
-    plt.legend(loc='upper left')
-    plt.show()
+    if (classifier == 'perceptron'):
+        cf.fit(X, y)
+        plt.plot(range(1, len(cf.errors) + 1), cf.errors, marker='o')
+        plt.xlabel('Epochs')
+        plt.ylabel('Number of misclassifications')
+
+        plt.show()
+
+        plot_decision_regions(X, y, classifier=cf)
+        plt.xlabel('sepal length [cm]')
+        plt.ylabel('petal length [cm]')
+        plt.legend(loc='upper left')
+
+        plt.show()
+
+    elif (classifier == 'adaline'):
+        fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(8, 4))
+        aln1 = Adaline(0.01, 10).fit(X,y)
+        ax[0].plot(range(1, len(aln1.cost) + 1), np.log10(aln1.cost), marker='o')
+        ax[0].set_xlabel('Epochs')
+        ax[0].set_ylabel('log(Sum-squared-error)')
+        ax[0].set_title('Adaptive Linear Neuron - Learning rate 0.01')
+
+        aln2 = Adaline(0.0001, 10).fit(X,y)
+
+        ax[1].plot(range(1, len(aln2.cost) + 1), aln2.cost, marker='o')
+        ax[1].set_xlabel('Epochs')
+        ax[1].set_ylabel('Sum-squared-error')
+        ax[1].set_title('Adaptive Linear Neuron - Learning rate 0.0001')
+        plt.show()
+
+        aln = Adaline(0.01, 10)
+        aln.fit(X_std,y)
+
+        plot_decision_regions(X_std, y, classifier=aln)
+
+        plt.title('Adaptive Linear Neuron - Gradient Descent')
+        plt.xlabel('sepal length [standardized]')
+        plt.ylabel('petal length [standardized]')
+        plt.legend(loc='upper left')
+        plt.show()
+
+        plt.plot(range(1, len(aln.cost) + 1), aln.cost, marker='o')
+        plt.xlabel('Epochs')
+        plt.ylabel('Sum-squared-error')
+        plt.show()
+    elif (classifier == 'sgd'):
+        cf.fit(X_std, y)
+        plot_decision_regions(X_std, y, classifier=cf)
+        plt.title('SGD - Stochastic Gradient Descent')
+        plt.xlabel('sepal length [standardized]')
+        plt.ylabel('petal length [standardized]')
+        plt.legend(loc='upper left')
+        plt.show()
+        plt.plot(range(1, len(cf.cost) + 1), cf.cost, marker='o')
+        plt.xlabel('Epochs')
+        plt.ylabel('Average Cost')
+        plt.show()
+
+
+
+    
 
 
 if __name__ == "__main__":
