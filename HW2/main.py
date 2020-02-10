@@ -1,6 +1,6 @@
 # Cyrus Baker
 # February 3, 2020
-# HW2.py
+# main.py
 
 # Dependencies
 import numpy as np
