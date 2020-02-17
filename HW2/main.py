@@ -119,6 +119,7 @@ def main():
         plt.xlabel('Epochs')
         plt.ylabel('Sum-squared-error')
         plt.show()
+        
     elif (classifier == 'sgd'):
         cf.fit(X_std, y)
         plot_decision_regions(X_std, y, classifier=cf)
