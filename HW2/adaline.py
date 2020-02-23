@@ -4,36 +4,80 @@
 
 # dependencies
 import numpy as np
+import matplotlib.pyplot as plt
+import timeit
 
 class Adaline(object):
-    def __init__(self, rate = 0.01, niter = 10):
-        self.rate = rate
-        self.niter = niter   
+    """ADAptive LInear NEuron classifier.
+    Parameters
+    ------------
+    eta : float
+    Learning rate (between 0.0 and 1.0)
+    n_iter : int
+    Passes over the training dataset.
+    random_state : int
+    Random number generator seed for random weight
+    initialization.
+    Attributes
+    -----------
+    w_ : 1d-array
+    Weights after fitting.
+    cost_ : list
+    Sum-of-squares cost function value in each epoch.
+    """
+    # eta = 0.001 for iris and 0.0001 for ionosphere
+    def __init__(self, eta=0.0001, n_iter=50, random_state=1):
+        self.eta = eta
+        self.n_iter = n_iter
+        self.random_state = random_state
+        
     def fit(self, X, y):
-        """Fit training data
-        X : Training vectors, X.shape : [#samples, #features]
-        y : Target values, y.shape : [#samples]
-        """  
-        # weights
-        self.weight = np.zeros(1 + X.shape[1])   
-        # Number of misclassifications
-        self.errors = [] 
-        # Cost function
-        self.cost = []   
-        for i in range(self.niter):
-            output = self.net_input(X)
-            errors = y - output
-            self.weight[1:] += self.rate * X.T.dot(errors)
-            self.weight[0] += self.rate * errors.sum()
+        # start timer
+        start = timeit.default_timer()
+        """ Fit training data.
+        Parameters
+        ----------
+        X : {array-like}, shape = [n_samples, n_features]
+        Training vectors, where n_samples is the number of
+        samples and
+        n_features is the number of features.
+        y : array-like, shape = [n_samples]
+        Target values.
+        Returns
+        -------
+        self : object
+            """
+        rgen = np.random.RandomState(self.random_state)
+        self.w_ = rgen.normal(loc=0.0, scale=0.01,
+        size=1 + X.shape[1])
+        self.cost_ = []
+        for i in range(self.n_iter):
+            net_input = self.net_input(X)
+            output = self.activation(net_input)
+            errors = (y - output)
+            self.w_[1:] += self.eta * X.T.dot(errors)
+            self.w_[0] += self.eta * errors.sum()
             cost = (errors**2).sum() / 2.0
-            self.cost.append(cost)
-        return self  
+            self.cost_.append(cost)
+            print('Accuracy = ' + str((len(X) - cost) / len(X)))
+        plt.plot(range(len(self.cost_)), self.cost_)
+        plt.title('Misclassifications per iteration')
+        plt.xlabel('Iterations')
+        plt.ylabel('Misclassifications')
+        # stop timer
+        stop = timeit.default_timer()
+        print('Time: ', stop - start) 
+        plt.show() 
+        return self
+        
     def net_input(self, X):
         """Calculate net input"""
-        return np.dot(X, self.weight[1:]) + self.weight[0]   
+        return np.dot(X, self.w_[1:]) + self.w_[0]
+        
     def activation(self, X):
         """Compute linear activation"""
-        return self.net_input(X) 
+        return X
+        
     def predict(self, X):
         """Return class label after unit step"""
-        return np.where(self.activation(X) >= 0.0, 1, -1)    
+        return np.where(self.activation(self.net_input(X)) >= 0.0, 1, -1)
