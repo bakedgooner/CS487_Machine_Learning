@@ -48,7 +48,6 @@ def main():
     
     # change targets to positive and negative
     targs = np.unique(y)
-    print(targs)
     y = np.where(y == targs[0], 1, -1)
 
     # standardize attributes
