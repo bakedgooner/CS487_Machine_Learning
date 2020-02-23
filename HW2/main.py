@@ -1,6 +1,6 @@
 # Cyrus Baker
 # February 3, 2020
-# HW2.py
+# main.py
 
 # Dependencies
 import numpy as np
@@ -53,6 +53,11 @@ def plot_decision_regions(X, y, classifier, resolution=0.02):
         marker=markers[idx], label=cl)
 
 def main():
+    #Targs = df.iloc[:, -1].unique()
+    #if (len(Targs) > 2):
+        #Targs = Targs.
+        
+        
     X = df.iloc[0:100, [0, 2]].values
     y = df.iloc[0:100, 4].values
     y = np.where(y == 'Iris-setosa', -1, 1)
@@ -72,7 +77,7 @@ def main():
         cf.fit(X, y)
         plt.plot(range(1, len(cf.errors) + 1), cf.errors, marker='o')
         plt.xlabel('Epochs')
-        plt.ylabel('Number of misclassifications')
+        plt.ylabel('Number of updates')
 
         plt.show()
 
@@ -114,6 +119,7 @@ def main():
         plt.xlabel('Epochs')
         plt.ylabel('Sum-squared-error')
         plt.show()
+        
     elif (classifier == 'sgd'):
         cf.fit(X_std, y)
         plot_decision_regions(X_std, y, classifier=cf)
