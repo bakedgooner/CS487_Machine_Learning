@@ -72,42 +72,72 @@ elif classifier == "svm_nl":
     print("Running time: " , end - start, " ms")
     print('Accuracy: %.4f' % accuracy_score(y_test, y_pred))
 elif classifier == "dt_gini":
+    maxAcc = 0
+    bestTime = 0
     for n in range(2, 11):
         classify = classifiers.Classifiers(random_state=1, max_depth=n, X_train=X_train, y_train=y_train, X_test=X_test)
         start = time.time() * 1000
         y_pred = classify.dt_gini()
         end = time.time() * 1000
-        print("Running time: " , end - start, " ms")
-        print('Accuracy: %.4f' % accuracy_score(y_test, y_pred))
+        Acc = accuracy_score(y_test, y_pred)
+        if Acc > maxAcc:
+            maxAcc = Acc
+            bestTime = end - start
+    print("\nRunning time: " , bestTime, " ms")
+    print('Accuracy: %.4f' % maxAcc)
 elif classifier == "dt_entropy":
+    maxAcc = 0
+    bestTime = 0
     for n in range(2, 11):
         classify = classifiers.Classifiers(random_state=1, max_depth=n, X_train=X_train, y_train=y_train, X_test=X_test)
         start = time.time() * 1000
         y_pred = classify.dt_entropy()
         end = time.time() * 1000
-        print("Running time ", n, ":" , end - start, " ms")
-        print('Accuracy: %.4f' % accuracy_score(y_test, y_pred))
+        Acc = accuracy_score(y_test, y_pred)
+        if Acc > maxAcc:
+            maxAcc = Acc
+            bestTime = end - start
+    print("\nRunning time: " , bestTime, " ms")
+    print('Accuracy: %.4f' % maxAcc)
 elif classifier == "knn_minkowski":
+    maxAcc = 0
+    bestTime = 0
     for n in range(1, 11):
         classify = classifiers.Classifiers(p=1, n_neighbors=n, X_train=X_train, y_train=y_train, X_test=X_test)
         start = time.time() * 1000
         y_pred = classify.knn_minkowski()
         end = time.time() * 1000
-        print("Running time ", n, ":" , end - start, " ms")
-        print('Accuracy: %.4f' % accuracy_score(y_test, y_pred))
+        Acc = accuracy_score(y_test, y_pred)
+        if Acc > maxAcc:
+            maxAcc = Acc
+            bestTime = end - start
+    print("\nRunning time: " , bestTime, " ms")
+    print('Accuracy: %.4f' % maxAcc)
 elif classifier == "knn_euclidean":
+    maxAcc = 0
+    bestTime = 0
     for n in range(1, 11):
         classify = classifiers.Classifiers(p=1, n_neighbors=n, X_train=X_train, y_train=y_train, X_test=X_test)
         start = time.time() * 1000
         y_pred = classify.knn_euclidean()
         end = time.time() * 1000
-        print("Running time ", n, ":" , end - start, " ms")
-        print('Accuracy: %.4f' % accuracy_score(y_test, y_pred))
+        Acc = accuracy_score(y_test, y_pred)
+        if Acc > maxAcc:
+            maxAcc = Acc
+            bestTime = end - start
+    print("\nRunning time: " , bestTime, " ms")
+    print('Accuracy: %.4f' % maxAcc)
 elif classifier == "knn_manhattan":
+    maxAcc = 0
+    bestTime = 0
     for n in range(1, 11):
         classify = classifiers.Classifiers(p=1, n_neighbors=n, X_train=X_train, y_train=y_train, X_test=X_test)
         start = time.time() * 1000
         y_pred = classify.knn_manhattan()
         end = time.time() * 1000
-        print("Running time ", n, ":" , end - start, " ms")
-        print('Accuracy: %.4f' % accuracy_score(y_test, y_pred))
+        Acc = accuracy_score(y_test, y_pred)
+        if Acc > maxAcc:
+            maxAcc = Acc
+            bestTime = end - start
+    print("\nRunning time: " , bestTime, " ms")
+    print('Accuracy: %.4f' % maxAcc)

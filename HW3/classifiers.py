@@ -30,7 +30,7 @@ class Classifiers(object):
         start = time.time() * 1000
         self.__obj.fit(self.X_train, self.y_train)
         end = time.time() * 1000
-        print("Accuracy for train: ", self.__obj.score(self.X_train, self.y_train))
+        print("\nAccuracy for train: ", self.__obj.score(self.X_train, self.y_train))
         print("Running time for fit: " , end - start, " ms")
 
     def __predict(self):
