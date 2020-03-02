@@ -48,7 +48,7 @@ def predTime():
 
     fig.tight_layout()
 
-    plt.savefig("pred.png")
+    plt.show()
 
 def trainAccuracy():
     labels =["perceptron", "svm_l", "svm_nl", "dt_gini", "dt_entropy", "knn_minkowski", "knn_euclidean", "knn_manhattan"]
@@ -72,7 +72,7 @@ def trainAccuracy():
 
     fig.tight_layout()
 
-    plt.savefig("trainAccuracy.png")
+    plt.show()
 
 def testAccuracy():
     labels =["perceptron", "svm_l", "svm_nl", "dt_gini", "dt_entropy", "knn_minkowski", "knn_euclidean", "knn_manhattan"]
@@ -96,7 +96,7 @@ def testAccuracy():
 
     fig.tight_layout()
 
-    plt.savefig("testAccuracy.png")
+    plt.show()
 
 def accuracyOverTime():
     labels =["perceptron", "svm_l", "svm_nl", "dt_gini", "dt_entropy", "knn_minkowski", "knn_euclidean", "knn_manhattan"]
@@ -120,7 +120,7 @@ def accuracyOverTime():
 
     fig.tight_layout()
 
-    plt.savefig("timeAccuracy.png")
+    plt.show()
 
 fitTime()
 predTime()
