@@ -83,8 +83,10 @@ elif classifier == "dt_gini":
         if Acc > maxAcc:
             maxAcc = Acc
             bestTime = end - start
+            bestDepth = n
     print("\nRunning time: " , bestTime, " ms")
     print('Accuracy: %.4f' % maxAcc)
+    print("Max Depth: " , bestDepth)
 elif classifier == "dt_entropy":
     maxAcc = 0
     bestTime = 0
@@ -97,8 +99,10 @@ elif classifier == "dt_entropy":
         if Acc > maxAcc:
             maxAcc = Acc
             bestTime = end - start
+            bestDepth = n
     print("\nRunning time: " , bestTime, " ms")
     print('Accuracy: %.4f' % maxAcc)
+    print("Max Depth: " , bestDepth)
 elif classifier == "knn_minkowski":
     maxAcc = 0
     bestTime = 0
@@ -111,8 +115,11 @@ elif classifier == "knn_minkowski":
         if Acc > maxAcc:
             maxAcc = Acc
             bestTime = end - start
+            bestN = n
     print("\nRunning time: " , bestTime, " ms")
     print('Accuracy: %.4f' % maxAcc)
+    print("Num_Neighbors" , bestN)
+
 elif classifier == "knn_euclidean":
     maxAcc = 0
     bestTime = 0
@@ -125,8 +132,10 @@ elif classifier == "knn_euclidean":
         if Acc > maxAcc:
             maxAcc = Acc
             bestTime = end - start
+            bestN = n
     print("\nRunning time: " , bestTime, " ms")
     print('Accuracy: %.4f' % maxAcc)
+    print("Num_Neighbors" , bestN)
 elif classifier == "knn_manhattan":
     maxAcc = 0
     bestTime = 0
@@ -139,5 +148,7 @@ elif classifier == "knn_manhattan":
         if Acc > maxAcc:
             maxAcc = Acc
             bestTime = end - start
+            bestN = n
     print("\nRunning time: " , bestTime, " ms")
     print('Accuracy: %.4f' % maxAcc)
+    print("Num_Neighbors" , bestN)
