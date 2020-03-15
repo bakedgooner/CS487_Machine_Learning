@@ -170,6 +170,7 @@ elif classifier == "bagging":
                     runtime = end - start
                     if acc > maxAcc:
                         maxAcc = acc
+                        bestTime = runtime
                         bestNEst = n
                         bestMaxSamples = m
                         bestMaxFeatures = mx
@@ -180,6 +181,7 @@ elif classifier == "bagging":
                     print('Accuracy: %.4f' % acc)
 
     print("\nmaxAcc = ", maxAcc)
+    print("runtime = ", bestTime)
     print("bestNEst = ", bestNEst)
     print("bestMaxSamples = ", bestMaxSamples)
     print("bestMaxFeatures = ", bestMaxFeatures)
