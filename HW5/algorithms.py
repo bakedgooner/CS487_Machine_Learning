@@ -22,6 +22,7 @@ class Algorithms(object):
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
+        self.__obj = None
 
     def __fit(self):
         start = time.time() * 1000
