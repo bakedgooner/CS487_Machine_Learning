@@ -10,9 +10,9 @@ import pandas as pd
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
+from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
-
-from xlsxwriter.utility import xl_rowcol_to_cell
+from sklearn.metrics import mean_squared_error, homogeneity_score, completeness_score, v_measure_score
 
 import clusterers
 
@@ -33,10 +33,17 @@ if dataset == "iris":
     y = df.iloc[:, -1].values
     names = {"Iris-setosa": 0, "Iris-versicolor": 1, "Iris-virginica": 2}
     y = [names[y[i]] for i in range(len(y))]
-    k = 3
+    sc = StandardScaler()
+    X_std = sc.fit_transform(X)
+
+    # From Graphs
+    k = 5
+    minPts = 15
+    eps = 0.8
 
 else:
     df = pd.read_csv("faults.csv")
+    df = df.fillna(0)
 
     targets = df.iloc[:, -7:]
     df.drop(targets.columns, axis=1, inplace=True)
@@ -48,12 +55,19 @@ else:
         'category', copy=False)
     df['Outside_Global_Index'] = df['Outside_Global_Index'].astype(
         'category', copy=False)
-    X = df.loc[:, df.columns != 'Target']
-    y = df.loc[:, 'Target']
+    X = np.array(df.loc[:, df.columns != 'Target'])
+    y = np.array(df.loc[:, 'Target'])
     names = {"Pastry": 0, "Z_Scratch": 1, "K_Scatch": 2,
              "Stains": 3, "Dirtiness": 4, "Bumps": 5, "Other_Faults": 6}
     y = [names[y[i]] for i in range(len(y))]
+    # Standardize
+    sc = StandardScaler()
+    X_std = sc.fit_transform(X)
+    # From Graphs
     k = 7
+    minPts = 10
+    eps = 5
+
 
 # Elbow Method
 sse = []
@@ -64,7 +78,7 @@ for n in range(1, 20):
                 max_iter=300,
                 random_state=0
                 )
-    km.fit(X)
+    km.fit(X_std)
     sse.append(km.inertia_)
 
 plt.plot(range(1, 20), sse)
@@ -76,9 +90,9 @@ plt.xlabel("Number of clusters")
 # minPts and eps
 num = 10
 nn = NearestNeighbors(n_neighbors=num + 1)
-neighbors = nn.fit(X)
-distances, indices = neighbors.kneighbors(X)
-distanceK = np.empty([num, X.shape[0]])
+neighbors = nn.fit(X_std)
+distances, indices = neighbors.kneighbors(X_std)
+distanceK = np.empty([num, X_std.shape[0]])
 for i in range(num):
     di = distances[:, (i+1)]
     di.sort()
@@ -102,10 +116,10 @@ if clusterer == 'kmeans':
                                metric="euclidean",
                                t=2.5,
                                criterion="distance",
-                               eps=0.2,
-                               min_samples=5,
+                               eps=eps,
+                               min_samples=minPts,
                                random_state=0,
-                               X=X
+                               X=X_std
                                )
     y_pred = cl.kmeans()
 
@@ -120,10 +134,10 @@ if clusterer == 'sci_hei':
                                metric="euclidean",
                                t=2.5,
                                criterion="distance",
-                               eps=0.2,
-                               min_samples=5,
+                               eps=eps,
+                               min_samples=minPts,
                                random_state=0,
-                               X=X
+                               X=X_std
                                )
     y_pred = cl.sci_hei()
 if clusterer == 'skl_hei':
@@ -137,10 +151,10 @@ if clusterer == 'skl_hei':
                                metric="euclidean",
                                t=2.5,
                                criterion="distance",
-                               eps=0.2,
-                               min_samples=5,
+                               eps=eps,
+                               min_samples=minPts,
                                random_state=0,
-                               X=X
+                               X=X_std
                                )
     y_pred = cl.skl_hei()
 if clusterer == 'dbscan':
@@ -154,16 +168,20 @@ if clusterer == 'dbscan':
                                metric="euclidean",
                                t=2.5,
                                criterion="distance",
-                               eps=0.2,
-                               min_samples=5,
+                               eps=eps,
+                               min_samples=minPts,
                                random_state=0,
-                               X=X
+                               X=X_std
                                )
     y_pred = cl.dbscan()
 
-c = 0
-for i in range(X.shape[0]):
-    if y[i] == y_pred[i]:
-        c += 1
-acc = c / X.shape[0] * 100
-print("Accuracy score for ", clusterer, ": ", str(acc))
+e = mean_squared_error(y_pred, y) * len(y_pred)
+h = homogeneity_score(y, y_pred)
+c = completeness_score(y, y_pred)
+v = v_measure_score(y, y_pred)
+print("\n %s - %s\n\n" % (dataset, clusterer))
+print("e ", e)
+print("h ", h)
+print("c ", c)
+print("v ", v)
+print("\n")
